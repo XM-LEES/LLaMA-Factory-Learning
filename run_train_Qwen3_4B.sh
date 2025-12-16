@@ -18,4 +18,11 @@ CUDA_VISIBLE_DEVICES=0 llamafactory-cli train \
     --save_steps 100 \
     --warmup_ratio 0.1 \
     --fp16 True \
-    --quantization_bit 4
+    --quantization_bit 4 \
+    \
+    --gradient_checkpointing True \
+    \
+    --resume_from_checkpoint True \
+
+    # 不保存所有中间激活层，而是在反向传播时重算
+    # 自动恢复

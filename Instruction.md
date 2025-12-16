@@ -173,3 +173,46 @@ export HF_ENDPOINT=https://hf-mirror.com
 
 huggingface-cli download --resume-download Qwen/Qwen2.5-7B-Instruct --local-dir ./hf_cache/Qwen2.5-7B-Instruct
 
+
+
+
+on 3080ti 10G
+新增 --gradient_checkpointing True (最重要)：
+
+作用：大幅降低显存占用（约节省 50%-60%）。它不保存所有中间激活层，而是在反向传播时重算。
+
+效果：没有这个参数，10G 显存跑 4B 模型即使是 4-bit 量化也非常危险。加上后，显存占用会变得很平稳。
+
+XXX 新增 --cutoff_len 1024 (解决"后来OOM"的关键)：
+
+作用：强制将超过 1024 个 token 的评论截断。
+
+原因：你之前的报错是因为遇到了某条特别长的 Steam 评论。如果不限制长度，显存需求会随长度呈平方级或线性增长，瞬间击穿 10G 显存墙。对于评论分析，1024 长度通常完全够用了。
+
+XXX 调整 Batch Size 策略：
+
+原配置：Batch=4, Accumulation=4 (总Batch=16)
+
+新配置：--per_device_train_batch_size 2, --gradient_accumulation_steps 8 (总Batch=16)
+
+原因：将单次喂给显卡的样本数从 4 降到 2，可以显著降低显存峰值。通过增加“梯度累积步数”到 8，保持了原本的训练效果（总 Batch 依然是 16），模型收敛速度和效果不会变，但显存更安全。
+
+
+
+
+LLaMA-Factory 支持从上一次保存的检查点（Checkpoint）断点续训。
+
+方法：添加 --resume_from_checkpoint 参数
+你只需要在运行脚本的命令中加入一行参数即可。
+
+方式：自动恢复
+添加 --resume_from_checkpoint True。 程序会自动去你的 --output_dir（即 saves/qwen3-4b-steam-lora）目录下寻找最新的 checkpoint-xxx 文件夹，并加载模型权重、优化器状态和学习率进度，从那一刻继续训练。
+
+Bash
+
+# 修改后的 run_train_Qwen3_4B.sh
+CUDA_VISIBLE_DEVICES=0 llamafactory-cli train \
+    ... （其他参数保持不变） ...
+    --output_dir saves/qwen3-4b-steam-lora \
+    --resume_from_checkpoint True \
+    ...
