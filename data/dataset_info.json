@@ -730,5 +730,21 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "steam_reviews": {
+    "file_name": "steam_sft_train.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
+  },
+  "steam_reviews_test": {
+    "file_name": "steam_sft_train_test.json",
+    "columns": {
+      "prompt": "instruction",
+      "query": "input",
+      "response": "output"
+    }
   }
 }
