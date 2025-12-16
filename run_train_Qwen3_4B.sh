@@ -10,8 +10,8 @@ CUDA_VISIBLE_DEVICES=0 llamafactory-cli train \
     --lora_target all \
     --output_dir saves/qwen3-4b-steam-lora \
     --overwrite_output_dir \
-    --per_device_train_batch_size 4 \
-    --gradient_accumulation_steps 4 \
+    --per_device_train_batch_size 2 \
+    --gradient_accumulation_steps 8 \
     --learning_rate 2e-4 \
     --num_train_epochs 3.0 \
     --logging_steps 10 \

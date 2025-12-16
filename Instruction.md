@@ -189,7 +189,7 @@ XXX 新增 --cutoff_len 1024 (解决"后来OOM"的关键)：
 
 原因：你之前的报错是因为遇到了某条特别长的 Steam 评论。如果不限制长度，显存需求会随长度呈平方级或线性增长，瞬间击穿 10G 显存墙。对于评论分析，1024 长度通常完全够用了。
 
-XXX 调整 Batch Size 策略：
+调整 Batch Size 策略：
 
 原配置：Batch=4, Accumulation=4 (总Batch=16)
 
